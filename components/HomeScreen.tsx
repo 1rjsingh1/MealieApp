@@ -7,15 +7,15 @@ import { readFileAsync } from '../utils/FileUtil';
 
 const HomeScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [menu, setMenu] = useState<{ breakfast?: string; lunch?: string; dinner?: string }>({});
-  const [isMenuVisible, setIsMenuVisible] = useState(false); // State for menu visibility
+  const [menu, setMenu] = useState<{ breakfast?: string; lunch?: string; dinner?: string; eveningSnack?: string }>({});
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   const navigateToInput = (fileName: string) => {
     navigation.navigate('RegisterMeal', { fileName });
   };
 
   const getRandomEntry = async (fileName: string) => {
-    const entries = await readFileAsync(fileName); // Use the utility function
+    const entries = await readFileAsync(fileName);
     if (entries.length === 0) {
       return 'No Meal Registered';
     }
@@ -26,9 +26,10 @@ const HomeScreen = () => {
     const breakfast = await getRandomEntry('breakfast');
     const lunch = await getRandomEntry('lunch');
     const dinner = await getRandomEntry('dinner');
+    const eveningSnack = await getRandomEntry('eveningSnack');
 
-    setMenu({ breakfast, lunch, dinner });
-    setIsMenuVisible(true); // Show the menu after generating it
+    setMenu({ breakfast, lunch, dinner, eveningSnack });
+    setIsMenuVisible(true);
   };
 
   const renderButton = (title: string, onPress: () => void, isSurprise = false) => (
@@ -44,12 +45,13 @@ const HomeScreen = () => {
         style={styles.backgroundImage}
       />
       <View style={styles.headingContainer}>
-        <Text style={styles.heading}>Hey Love!{'\n'}Ready for some good food</Text>
+        <Text style={styles.heading}>Hey Balpreet!{'\n'}Ready for some good food</Text>
       </View>
       <View style={styles.buttonContainer}>
         {renderButton("Breakfast", () => navigateToInput('breakfast'))}
-        {renderButton("Lunch", () => navigateToInput('lunch'))}
-        {renderButton("Dinner", () => navigateToInput('dinner'))}
+        {renderButton("Lunch", () => navigateToInput('breakfast'))}
+              {renderButton("Evening Snack", () => navigateToInput('eveningSnack'))}
+              {renderButton("Dinner", () => navigateToInput('dinner'))}
         {renderButton("Surprise Me!", generateMenu, true)}
       </View>
       <View style={styles.menuWrapper}>
@@ -59,12 +61,14 @@ const HomeScreen = () => {
             <Text style={styles.menuText}>Breakfast: {menu.breakfast || 'No entry found'}</Text>
             <Text style={styles.menuText}>Lunch: {menu.lunch || 'No entry found'}</Text>
             <Text style={styles.menuText}>Dinner: {menu.dinner || 'No entry found'}</Text>
+            <Text style={styles.menuText}>Evening Snack: {menu.eveningSnack || 'No entry found'}</Text>
           </View>
         )}
       </View>
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
