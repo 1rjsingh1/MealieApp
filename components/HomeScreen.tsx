@@ -8,7 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'; // Import 
 
 const HomeScreen = () => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-    const [menu, setMenu] = useState<{ breakfast?: string; lunch?: string; dinner?: string }>({});
+    const [menu, setMenu] = useState<{ breakfast?: string; lunch?: string; dinner?: string; snack?: string; }>({});
     const [isMenuVisible, setIsMenuVisible] = useState(false); // State for menu visibility
     const [isSaveButtonVisible, setIsSaveButtonVisible] = useState(false); // State for Save Me button visibility
 
@@ -33,12 +33,13 @@ const HomeScreen = () => {
         try {
             const savedMenu = JSON.parse(await AsyncStorage.getItem('menu') || '{}');
 
-            let breakfast, lunch, dinner;
+            let breakfast, lunch, dinner, snack;
             let maxAttempts = 10; // Limit the number of attempts to prevent infinite loops
 
             do {
                 breakfast = await getRandomEntry('breakfast', savedMenu.breakfast);
                 lunch = await getRandomEntry('lunch', savedMenu.lunch);
+                snack = await getRandomEntry('snack', savedMenu.snack);
                 dinner = await getRandomEntry('dinner', savedMenu.dinner);
 
                 maxAttempts--;
@@ -46,10 +47,11 @@ const HomeScreen = () => {
                 maxAttempts > 0 &&
                 breakfast === savedMenu.breakfast &&
                 lunch === savedMenu.lunch &&
+                snack==savedMenu.snack&&
                 dinner === savedMenu.dinner
             );
 
-            setMenu({ breakfast, lunch, dinner });
+            setMenu({ breakfast, lunch, snack, dinner });
             setIsMenuVisible(true); // Show the menu after generating it
             setIsSaveButtonVisible(true); // Show the Save Me button after generating the menu
         } catch (error) {
@@ -84,6 +86,7 @@ const HomeScreen = () => {
             <View style={styles.buttonContainer}>
                 {renderButton("Breakfast", () => navigateToInput('breakfast'))}
                 {renderButton("Lunch", () => navigateToInput('lunch'))}
+                {renderButton("Evening Snack", () => navigateToInput('snack'))}
                 {renderButton("Dinner", () => navigateToInput('dinner'))}
                 {renderButton("Surprise Me!", generateMenu, true)}
             </View>
@@ -93,6 +96,7 @@ const HomeScreen = () => {
                         <Text style={styles.menuHeading}>Menu for the Day:</Text>
                         <Text style={styles.menuText}>Breakfast: {menu.breakfast || 'No entry found'}</Text>
                         <Text style={styles.menuText}>Lunch: {menu.lunch || 'No entry found'}</Text>
+                        <Text style={styles.menuText}>snack: {menu.snack || 'No entry found'}</Text>
                         <Text style={styles.menuText}>Dinner: {menu.dinner || 'No entry found'}</Text>
                     </View>
                 )}
